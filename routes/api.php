@@ -31,7 +31,7 @@ Route::middleware('jwt.auth')->group(function () {
     Route::delete('/checklist/{id}', [NoteController::class, 'destroy']);
 });
 
-Route::middleware('auth:api')->group(function () {
+Route::middleware('jwt:api')->group(function () {
     Route::get('/checklist/{noteId}/items', [NoteItemController::class, 'index']);
     Route::get('/checklist/{noteId}/item/{childNoteId}', [NoteItemController::class, 'getItemDetail']);
     Route::post('/checklist/{noteId}/items', [NoteItemController::class, 'store']);
