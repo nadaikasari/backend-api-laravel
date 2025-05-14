@@ -122,14 +122,75 @@ class NoteItemController extends Controller
         ], 200);
     }
 
-
-    public function destroy($id)
+    public function updateChildItemChecked($noteId, $childId)
     {
-        $this->noteItemRepo->delete($id);
+        $noteItem = $this->noteItemRepo->getNoteById($noteId);
+    
+        if (!$noteItem) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Note not found.',
+            ], 404);
+        }
+    
+        $content = json_decode($noteItem->content, true);
+    
+        foreach ($content as &$parentItem) {
+            foreach ($parentItem['children'] as &$childItem) {
+                if ($childItem['id'] == $childId) {
+                    $childItem['is_checked'] = !$childItem['is_checked'];
+    
+                    break 2;
+                }
+            }
+        }
+    
+        $noteItem->content = json_encode($content);
+    
+        $noteItem->save();
+    
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Child item updated successfully.',
+            'data' => $childItem,
+        ], 200);
+    }   
+
+    public function updateChildItem(Request $request, $noteId, $childId)
+    {
+        $data = $request->validate([
+            'itemName' => 'required|string|max:255',
+        ]);
+
+        $noteItem = $this->noteItemRepo->getNoteById($noteId);
+
+        if (!$noteItem) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Note not found.',
+            ], 404);
+        }
+
+        $content = json_decode($noteItem->content, true);
+
+        foreach ($content as &$parentItem) {
+            foreach ($parentItem['children'] as &$childItem) {
+                if ($childItem['id'] == $childId) {
+                    $childItem['item'] = $data['itemName'];
+
+                    break 2;
+                }
+            }
+        }
+
+        $noteItem->content = json_encode($content);
+
+        $noteItem->save();
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Note item deleted successfully.'
-        ]);
+            'message' => 'Child item updated successfully.',
+            'data' => $childItem,
+        ], 200);
     }
 }

@@ -36,4 +36,6 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/checklist/{noteId}/item/{childNoteId}', [NoteItemController::class, 'getItemDetail']);
     Route::post('/checklist/{noteId}/items', [NoteItemController::class, 'store']);
     Route::delete('/checklist/{noteId}/item/{childNoteId}', [NoteItemController::class, 'deleteChildItem']);
+    Route::put('/checklist/{noteId}/item/{childNoteId}', [NoteItemController::class, 'updateChildItemChecked']);
+    Route::put('/checklist/{noteId}/item/rename/{childNoteId}', [NoteItemController::class, 'updateChildItem']);
 });
